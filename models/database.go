@@ -1,18 +1,14 @@
-package main
+package models
 
 import (
-	// "net/http"
 	// "database/sql"
 	"log"
 	"os"
 
-	_ "github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func main() {
-	os.Remove("waveseekers-database.db") // I delete the file to avoid duplicated records.
-	// SQLite is a file based database.
+func CreateDatabase() {
 	log.Println("Creating waveseekers-database.db...")
 	file, err := os.Create("waveseekers-database.db") // Create SQLite file
 	if err != nil {
