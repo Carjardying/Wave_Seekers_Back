@@ -1,6 +1,7 @@
 package main
 
 import (
+    "context"
 	"database/sql"
 	"log"
 	"os"
@@ -36,7 +37,27 @@ func main() {
     if err := createLikedSpotTable(db); err != nil {
         panic(err)
     } // Create LikedSpotTable
+
+    
+	users := []User{
+		{Email: "wave1@test.com", Password: "wave1"},
+		{Email: "wave2@test.com", Password: "wave2"},
+		{Email: "wave3@test.com", Password: "wave3"},
+		{Email: "wave4@test.com", Password: "wave4"},
+        {Email: "wave5@test.com", Password: "wave5"},
+	}
+
+	for _, u := range users {
+		id, err := addUser(db, &u)
+		if err != nil {
+			log.Printf("Insert error user %s : %v\n", u.Email, err)
+		} else {
+			log.Printf("User %s insert with ID %d\n", u.Email, id)
+		}
+	}
+
 }
+
 
 func createDatabase() {
 	log.Println("Creating waveseekers-database.db...")
@@ -112,15 +133,15 @@ func createLikedSpotTable(db *sql.DB) error {
     return err
 }
 
-func addUser(u *User) (int64, error) {
+func addUser(db *sql.DB, u *User) (int64, error) {
 	result, err := db.ExecContext(
 		context.Background(),
-		`INSERT INTO user (email, password) VALUES (?,?);`, u.Email, u.Password
+		`INSERT INTO user (email, password) VALUES (?,?);`, 
+        u.Email, u.Password,
 	)
-	id, err := result.LastInsertId()
 	if err != nil {
 		return 0, err
 	}
-	return id, nil
+	return result.LastInsertId()
 }
 
