@@ -14,7 +14,7 @@ type User struct {
 func CreateUserTable(db *sql.DB) error {
 	ddl := `CREATE TABLE IF NOT EXISTS user (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,		
-        email TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
         password TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP	
