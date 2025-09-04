@@ -3,7 +3,26 @@ package Models
 import (
 	"context"
 	"database/sql"
+	"log"
 )
+
+type User struct {
+	Email    string
+	Password string
+}
+
+func CreateUserTable(db *sql.DB) error {
+	ddl := `CREATE TABLE IF NOT EXISTS user (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,		
+        email TEXT NOT NULL,
+        password TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP	
+    );`
+	_, err := db.Exec(ddl)
+	log.Println("User Table created")
+	return err
+}
 
 func AddUser(db *sql.DB, u *User) (int64, error) {
 	var existingID int64

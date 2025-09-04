@@ -9,17 +9,17 @@ import (
 func main() {
 	dbFile := "waveseekers-database.db"
 
-	// Crée le fichier de base de données s'il n'existe pas
+	// DB creation
 	CreateDatabase(dbFile)
 
-	// Connexion à la base
+	// DB connexion
 	db, err := Connect(dbFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
-	// Création des tables
+	// Create tables
 	if err := Models.CreateUserTable(db); err != nil {
 		log.Fatal(err)
 	}
@@ -33,17 +33,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Seed Users
+	// Seeders
 	if err := Models.SeedUsers(db); err != nil {
 		log.Fatal(err)
 	}
 
-	// Seed Countries
 	if err := Models.SeedCountries(db); err != nil {
 		log.Fatal(err)
 	}
 
-	// Seed Spots
 	if err := Models.SeedSpots(db); err != nil {
 		log.Fatal(err)
 	}
