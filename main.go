@@ -61,12 +61,13 @@ func main() {
 	}
 
 	router := gin.Default()
-	router.GET("/users/:id", getUserHandler)
+	router.GET("/users/:id", getUserByIDHandler)
+	router.GET("/spots", getAllSpotsHandler)
 	router.Run("localhost:8080")
 }
 
 // Handler function that calls GetUserByID
-func getUserHandler(c *gin.Context) {
+func getUserByIDHandler(c *gin.Context) {
 	idStr := c.Param("id")
 
 	// Converting int to string for id(like a ParsInt)
@@ -87,4 +88,20 @@ func getUserHandler(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, user)
+}
+
+// GetAllSpot's Handler
+func getAllSpotsHandler(c *gin.Context) {
+
+	spot, err := Models.GetAllSpots(db)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.IndentedJSON(http.StatusNotFound, gin.H{"message": "spot not found"})
+		} else {
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "error fetching spot"})
+		}
+		return
+	}
+	c.IndentedJSON(http.StatusOK, spot)
+
 }

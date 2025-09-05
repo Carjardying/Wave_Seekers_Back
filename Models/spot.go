@@ -65,3 +65,22 @@ func AddSpot(db *sql.DB, s *Spot) (int64, error) {
 	}
 	return result.LastInsertId()
 }
+
+func GetAllSpots(db *sql.DB) ([]Spot, error) {
+	rows, err := db.Query(`SELECT id, user_id, country_id, destination, location, lat, long, peak_season_start, peak_season_end, difficulty_level, surfing_culture, image_url FROM spot`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var spots []Spot
+	for rows.Next() {
+		var spot Spot
+		err := rows.Scan(&spot.ID, &spot.UserID, &spot.CountryID, &spot.Destination, &spot.Location, &spot.Lat, &spot.Long, &spot.PeakSeasonStart, &spot.PeakSeasonEnd, &spot.DifficultyLevel, &spot.SurfingCulture, &spot.ImageURL)
+		if err != nil {
+			return nil, err
+		}
+		spots = append(spots, spot)
+	}
+	return spots, nil
+}
