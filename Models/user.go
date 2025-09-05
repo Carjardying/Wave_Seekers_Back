@@ -7,6 +7,7 @@ import (
 )
 
 type User struct {
+	ID       int
 	Email    string
 	Password string
 }
@@ -38,4 +39,32 @@ func AddUser(db *sql.DB, u *User) (int64, error) {
 		return 0, err
 	}
 	return result.LastInsertId()
+}
+
+func GetAllUsers(db *sql.DB) ([]User, error) {
+	rows, err := db.Query(`SELECT id, email, password FROM user`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []User
+	for rows.Next() {
+		var user User
+		err := rows.Scan(&user.ID, &user.Email, &user.Password)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	return users, nil
+}
+
+func GetUserByID(db *sql.DB, id int) (*User, error) {
+	user := &User{}
+	err := db.QueryRow(`SELECT id, email, password FROM user WHERE id = ?`, id).Scan(&user.ID, &user.Email, &user.Password)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

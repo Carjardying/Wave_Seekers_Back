@@ -7,6 +7,7 @@ import (
 )
 
 type Spot struct {
+	ID              int
 	UserID          int
 	CountryID       int
 	Destination     string
