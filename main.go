@@ -61,12 +61,15 @@ func main() {
 	}
 
 	router := gin.Default()
-	router.GET("/users/:id", getUserHandler)
+	router.GET("/users/:id", getUserByIDHandler)
+	router.GET("/spots", getAllSpotsHandler)
+	router.GET("/spots/:id", getSpotByIDHandler) //Spot's Details
+	router.GET("/spots/country/:country_id", getSpotByCountryHandler)
 	router.Run("localhost:8080")
 }
 
 // Handler function that calls GetUserByID
-func getUserHandler(c *gin.Context) {
+func getUserByIDHandler(c *gin.Context) {
 	idStr := c.Param("id")
 
 	// Converting int to string for id(like a ParsInt)
@@ -87,4 +90,64 @@ func getUserHandler(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, user)
+}
+
+// GetAllSpot's Handler
+func getAllSpotsHandler(c *gin.Context) {
+
+	spot, err := Models.GetAllSpots(db)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.IndentedJSON(http.StatusNotFound, gin.H{"message": "spots list not found"})
+		} else {
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "error fetching spots list"})
+		}
+		return
+	}
+	c.IndentedJSON(http.StatusOK, spot)
+
+}
+
+func getSpotByIDHandler(c *gin.Context) {
+	idStr := c.Param("id")
+
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid spot ID"})
+		return
+	}
+
+	spot, err := Models.GetSpotByID(db, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.IndentedJSON(http.StatusNotFound, gin.H{"message": "spot not found"})
+		} else {
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "error fetching spot"})
+		}
+		return
+	}
+	c.IndentedJSON(http.StatusOK, spot)
+}
+
+func getSpotByCountryHandler(c *gin.Context) {
+	idStr := c.Param("country_id")
+
+	country_id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid spot ID"})
+		return
+	}
+
+	spot, err := Models.GetSpotsByCountryID(db, country_id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.IndentedJSON(http.StatusNotFound, gin.H{"message": "spot not found"})
+		} else {
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "error fetching spot"})
+		}
+		return
+	}
+	c.IndentedJSON(http.StatusOK, spot)
 }
