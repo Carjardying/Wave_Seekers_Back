@@ -1,13 +1,15 @@
-package Models
+package Seeders
 
 import (
 	"database/sql"
 	"log"
+
+	"example/Wave_Seekers_Back/Models"
 )
 
 // SeedUsers inserts all the users into the DB
 func SeedUsers(db *sql.DB) error {
-	users := []User{
+	users := []Models.User{
 		{Email: "wave1@test.com", Password: "wave1"},
 		{Email: "wave2@test.com", Password: "wave2"},
 		{Email: "wave3@test.com", Password: "wave3"},
@@ -16,7 +18,7 @@ func SeedUsers(db *sql.DB) error {
 	}
 
 	for _, u := range users {
-		id, err := AddUser(db, &u)
+		id, err := Models.AddUser(db, &u)
 		if err != nil {
 			log.Printf("Insert error user %s : %v\n", u.Email, err)
 		} else {
@@ -28,7 +30,7 @@ func SeedUsers(db *sql.DB) error {
 
 // SeedCountries inserts all the countries into the DB
 func SeedCountries(db *sql.DB) error {
-	countries := []Country{
+	countries := []Models.Country{
 		{Name: "Afghanistan"}, {Name: "Albania"}, {Name: "Algeria"}, {Name: "Andorra"}, {Name: "Angola"},
 		{Name: "Antigua and Barbuda"}, {Name: "Argentina"}, {Name: "Armenia"}, {Name: "Australia"}, {Name: "Austria"},
 		{Name: "Azerbaijan"}, {Name: "Bahamas"}, {Name: "Bahrain"}, {Name: "Bangladesh"}, {Name: "Barbados"},
@@ -71,7 +73,7 @@ func SeedCountries(db *sql.DB) error {
 	}
 
 	for _, c := range countries {
-		id, err := AddCountry(db, &c)
+		id, err := Models.AddCountry(db, &c)
 		if err != nil {
 			log.Printf("Insert error country %s : %v\n", c.Name, err)
 		} else {
@@ -84,7 +86,7 @@ func SeedCountries(db *sql.DB) error {
 
 // SeedSpots inserts all the spots into the DB
 func SeedSpots(db *sql.DB) error {
-	spots := []Spot{
+	spots := []Models.Spot{
 		{
 			UserID:          1,
 			CountryID:       186, // United States
@@ -163,62 +165,62 @@ func SeedSpots(db *sql.DB) error {
 			SurfingCulture:  "Fuerteventura's surf culture emerged in the 1970s when European surfers discovered consistent Atlantic swells wrapping around volcanic reefs and sand bottoms. The island's year-round warm climate and reliable waves created a European surf destination that rivals tropical locations, hosting numerous international competitions. Local Canarian culture blends Spanish traditions with African influences, creating a unique island vibe that welcomes international surf travelers. The surf industry now drives much of Fuerteventura's economy, with surf schools, camps, and board shapers establishing a thriving wave-riding community. Trade winds and consistent North Atlantic swells make the island a reliable training ground for European surfers seeking to hone their skills in powerful, consistent waves.",
 			ImageURL:        "path6",
 		},
-  {
-            UserID:          2,
-            CountryID:       104, // Maldives
-            Destination:     "Pasta Point",
-            Location:        "North Male Atoll",
-            Lat:             3.066667,
-            Long:            73.15,
-            PeakSeasonStart: "04-01",
-            PeakSeasonEnd:   "05-31",
-            DifficultyLevel: 3,
-            SurfingCulture:  "Pasta Point represents the pinnacle of tropical surfing luxury, where crystal-clear waters break over shallow coral reefs in perfect barrels. The wave was \"discovered\" by surf tourists in the 1990s, though local fishermen had observed these breaks for centuries while navigating between atolls. Maldivian surf culture centers around exclusive surf resorts and boat trips, creating a high-end surf tourism model that protects waves through limited access. The break's perfection comes from deep ocean swells wrapping around coral atolls, creating mechanical waves that seem almost too perfect to be natural. Climate change and coral bleaching now threaten these pristine surf spots, making each session precious and highlighting surfing's relationship with environmental conservation.",
-            ImageURL:        "path7",
-        },
-        {
-            UserID:          3,
-            CountryID:       161, // South Africa
-            Destination:     "Supertubes Beach",
-            Location:        "Eastern Cape",
-            Lat:             -34.05,
-            Long:            24.916667,
-            PeakSeasonStart: "08-01",
-            PeakSeasonEnd:   "10-09",
-            DifficultyLevel: 5,
-            SurfingCulture:  "J-Bay established itself as Africa's premier surf destination in the 1960s, when surfers discovered the perfect right-hand point break during apartheid-era South Africa. The wave became internationally famous through surf films and the annual Billabong Pro competition, showcasing South African surfing talent to the world. Local surf culture reflects the country's complex history, with post-apartheid integration creating a more diverse and inclusive surfing community. The town of Jeffreys Bay transformed from a small fishing village into a global surf industry hub, hosting major surfboard manufacturers and surf brands. Great white sharks patrol these waters, adding an element of danger that has shaped the fearless character of South African surfing culture.",
-            ImageURL:        "path8",
-        },
-        {
-            UserID:          4,
-            CountryID:       186, // United States
-            Destination:     "Kitty Hawk",
-            Location:        "North Carolina",
-            Lat:             36.066667,
-            Long:            -75.7,
-            PeakSeasonStart: "08-09",
-            PeakSeasonEnd:   "10-18",
-            DifficultyLevel: 3,
-            SurfingCulture:  "The Outer Banks surf scene developed alongside America's East Coast surf culture in the 1960s, with consistent Atlantic hurricane swells creating world-class waves. This barrier island chain holds historical significance as the birthplace of aviation, where the Wright brothers first flew, adding pioneering spirit to the local surf culture. Hurricane season brings powerful swells that can rival any surf destination globally, creating a hardcore community of surfers willing to brave dangerous conditions. The area's relative isolation and harsh winter conditions have fostered a tight-knit surf community that values authenticity over commercialization. Local surfers developed unique techniques for reading rapidly changing sandbars and powerful shore break, creating a distinct East Coast surfing style.",
-            ImageURL:        "path9",
-        },
-        {
-            UserID:          5,
-            CountryID:       186, // United States
-            Destination:     "Rockaway Beach",
-            Location:        "Oregon",
-            Lat:             45.616667,
-            Long:            -123.95,
-            PeakSeasonStart: "08-23",
-            PeakSeasonEnd:   "10-17",
-            DifficultyLevel: 1,
-            SurfingCulture:  "Rockaway Beach represents the rugged character of Pacific Northwest surfing, where cold water and powerful waves demand respect and proper equipment. The surf culture here emerged in the 1960s despite frigid water temperatures requiring full wetsuits year-round, attracting dedicated surfers seeking uncrowded waves. Oregon's environmental consciousness influences the local surf community, with strong emphasis on beach cleanups and ocean conservation efforts. The consistent but challenging conditions create skilled surfers who can handle powerful waves in adverse weather conditions. Rockaway's surf culture embodies the Pacific Northwest's independent spirit, where surfers value solitude and connection with raw nature over tropical perfection.",
-            ImageURL:        "path10",
-        },
-    }
+		{
+			UserID:          2,
+			CountryID:       104, // Maldives
+			Destination:     "Pasta Point",
+			Location:        "North Male Atoll",
+			Lat:             3.066667,
+			Long:            73.15,
+			PeakSeasonStart: "04-01",
+			PeakSeasonEnd:   "05-31",
+			DifficultyLevel: 3,
+			SurfingCulture:  "Pasta Point represents the pinnacle of tropical surfing luxury, where crystal-clear waters break over shallow coral reefs in perfect barrels. The wave was \"discovered\" by surf tourists in the 1990s, though local fishermen had observed these breaks for centuries while navigating between atolls. Maldivian surf culture centers around exclusive surf resorts and boat trips, creating a high-end surf tourism model that protects waves through limited access. The break's perfection comes from deep ocean swells wrapping around coral atolls, creating mechanical waves that seem almost too perfect to be natural. Climate change and coral bleaching now threaten these pristine surf spots, making each session precious and highlighting surfing's relationship with environmental conservation.",
+			ImageURL:        "path7",
+		},
+		{
+			UserID:          3,
+			CountryID:       161, // South Africa
+			Destination:     "Supertubes Beach",
+			Location:        "Eastern Cape",
+			Lat:             -34.05,
+			Long:            24.916667,
+			PeakSeasonStart: "08-01",
+			PeakSeasonEnd:   "10-09",
+			DifficultyLevel: 5,
+			SurfingCulture:  "J-Bay established itself as Africa's premier surf destination in the 1960s, when surfers discovered the perfect right-hand point break during apartheid-era South Africa. The wave became internationally famous through surf films and the annual Billabong Pro competition, showcasing South African surfing talent to the world. Local surf culture reflects the country's complex history, with post-apartheid integration creating a more diverse and inclusive surfing community. The town of Jeffreys Bay transformed from a small fishing village into a global surf industry hub, hosting major surfboard manufacturers and surf brands. Great white sharks patrol these waters, adding an element of danger that has shaped the fearless character of South African surfing culture.",
+			ImageURL:        "path8",
+		},
+		{
+			UserID:          4,
+			CountryID:       186, // United States
+			Destination:     "Kitty Hawk",
+			Location:        "North Carolina",
+			Lat:             36.066667,
+			Long:            -75.7,
+			PeakSeasonStart: "08-09",
+			PeakSeasonEnd:   "10-18",
+			DifficultyLevel: 3,
+			SurfingCulture:  "The Outer Banks surf scene developed alongside America's East Coast surf culture in the 1960s, with consistent Atlantic hurricane swells creating world-class waves. This barrier island chain holds historical significance as the birthplace of aviation, where the Wright brothers first flew, adding pioneering spirit to the local surf culture. Hurricane season brings powerful swells that can rival any surf destination globally, creating a hardcore community of surfers willing to brave dangerous conditions. The area's relative isolation and harsh winter conditions have fostered a tight-knit surf community that values authenticity over commercialization. Local surfers developed unique techniques for reading rapidly changing sandbars and powerful shore break, creating a distinct East Coast surfing style.",
+			ImageURL:        "path9",
+		},
+		{
+			UserID:          5,
+			CountryID:       186, // United States
+			Destination:     "Rockaway Beach",
+			Location:        "Oregon",
+			Lat:             45.616667,
+			Long:            -123.95,
+			PeakSeasonStart: "08-23",
+			PeakSeasonEnd:   "10-17",
+			DifficultyLevel: 1,
+			SurfingCulture:  "Rockaway Beach represents the rugged character of Pacific Northwest surfing, where cold water and powerful waves demand respect and proper equipment. The surf culture here emerged in the 1960s despite frigid water temperatures requiring full wetsuits year-round, attracting dedicated surfers seeking uncrowded waves. Oregon's environmental consciousness influences the local surf community, with strong emphasis on beach cleanups and ocean conservation efforts. The consistent but challenging conditions create skilled surfers who can handle powerful waves in adverse weather conditions. Rockaway's surf culture embodies the Pacific Northwest's independent spirit, where surfers value solitude and connection with raw nature over tropical perfection.",
+			ImageURL:        "path10",
+		},
+	}
 
 	for _, s := range spots {
-		id, err := AddSpot(db, &s)
+		id, err := Models.AddSpot(db, &s)
 		if err != nil {
 			log.Printf("Insert error spot %s : %v\n", s.Destination, err)
 		} else {
