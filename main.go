@@ -9,9 +9,11 @@ import (
 
 	"log"
 
+	"strconv"
+
 	"example/Wave_Seekers_Back/Models"
 
-	"strconv"
+	"example/Wave_Seekers_Back/Seeders"
 )
 
 var db *sql.DB
@@ -46,15 +48,15 @@ func main() {
 	// }
 
 	// Seeders
-	if err := Models.SeedUsers(db); err != nil {
+	if err := Seeders.SeedUsers(db); err != nil {
 		log.Fatal(err)
 	}
 
-	if err := Models.SeedCountries(db); err != nil {
+	if err := Seeders.SeedCountries(db); err != nil {
 		log.Fatal(err)
 	}
 
-	if err := Models.SeedSpots(db); err != nil {
+	if err := Seeders.SeedSpots(db); err != nil {
 		log.Fatal(err)
 	}
 
@@ -67,7 +69,7 @@ func main() {
 func getUserHandler(c *gin.Context) {
 	idStr := c.Param("id")
 
-	// Converting int to string (like a ParsInt)
+	// Converting int to string for id(like a ParsInt)
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid user ID"})
