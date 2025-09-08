@@ -45,6 +45,8 @@ func CreateSpotTable(db *sql.DB) error {
 	return err
 }
 
+/*-------------------POST-------------------*/
+
 func AddSpot(db *sql.DB, s *Spot) (int64, error) {
 	var existingID int64
 	err := db.QueryRow(`SELECT id FROM spot WHERE destination = ?`, s.Destination).Scan(&existingID)
@@ -65,6 +67,8 @@ func AddSpot(db *sql.DB, s *Spot) (int64, error) {
 	}
 	return result.LastInsertId()
 }
+
+/*-------------------GET-------------------*/
 
 func GetAllSpots(db *sql.DB) ([]Spot, error) {
 	rows, err := db.Query(`SELECT id, user_id, country_id, destination, location, lat, long, peak_season_start, peak_season_end, difficulty_level, surfing_culture, image_url FROM spot`)
@@ -113,7 +117,7 @@ func GetSpotsByCountryID(db *sql.DB, countryID int) ([]Spot, error) {
 	return spots, nil
 }
 
-//Select spot by user id
+// Select spot by user id
 func GetSpotsByUserID(db *sql.DB, userID int) ([]Spot, error) {
 	rows, err := db.Query(`SELECT id, user_id, country_id, destination, location, lat, long, peak_season_start, peak_season_end, difficulty_level, surfing_culture, image_url FROM spot WHERE user_id = ?`, userID)
 	if err != nil {
@@ -133,3 +137,7 @@ func GetSpotsByUserID(db *sql.DB, userID int) ([]Spot, error) {
 	}
 	return spots, nil
 }
+
+/*-------------------UPDATE-------------------*/
+
+/*-------------------DELETE-------------------*/
