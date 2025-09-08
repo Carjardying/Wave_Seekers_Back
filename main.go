@@ -5,20 +5,28 @@ import (
 
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-
 	"log"
 
 	"strconv"
 
+	"github.com/gin-gonic/gin"
+
+	"github.com/joho/godotenv" 
+
 	"example/Wave_Seekers_Back/Models"
 
 	"example/Wave_Seekers_Back/Seeders"
+
+	"example/Wave_Seekers_Back/Controllers"
 )
 
 var db *sql.DB
 
 func main() {
+	// Load environment variables
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, using system environment variables")
+	}
 
 	dbFile := "waveseekers-database.db"
 
@@ -32,6 +40,9 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
+
+	// Initialize Controllers with database connection
+	Controllers.InitializeDB(db)
 
 	// Create tables
 	if err := Models.CreateUserTable(db); err != nil {
@@ -68,6 +79,8 @@ func main() {
 	router.GET("/spots/user/:user_id", getSpotsByUserIDHandler)
 
 	router.POST("/spots", addSpotHandler)
+	router.POST("/signup", Controllers.SignUp)
+	router.POST("/login", Controllers.Login)
 
 	router.Run("localhost:8080")
 }

@@ -2,8 +2,20 @@ package Models
 
 import (
 	"context"
+	
 	"database/sql"
+	
 	"log"
+	
+	"html"
+	
+	"strings"
+
+	"errors"
+
+	"golang.org/x/crypto/bcrypt"
+
+	"example/Wave_Seekers_Back/Utils/Token"
 )
 
 type User struct {
@@ -25,6 +37,36 @@ func CreateUserTable(db *sql.DB) error {
 	return err
 }
 
+func VerifyPassword(password,hashedPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+}
+
+func LoginCheck(db *sql.DB, email string, password string) (string, error) {
+	
+	u := User{}
+
+	err := db.QueryRow(`SELECT id, email, password FROM user WHERE email = ?`, email).Scan(&u.ID, &u.Email, &u.Password)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", errors.New("user not found")
+		}
+		return "", err
+	}
+
+	err = VerifyPassword(password, u.Password)
+	if err != nil {
+		return "", err
+	}
+
+	tokenString, err := token.GenerateToken(uint(u.ID))
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
+	
+}
+
 func AddUser(db *sql.DB, u *User) (int64, error) {
 	var existingID int64
 	err := db.QueryRow(`SELECT id FROM user WHERE email = ?`, u.Email).Scan(&existingID)
@@ -34,11 +76,35 @@ func AddUser(db *sql.DB, u *User) (int64, error) {
 	if existingID != 0 {
 		return existingID, nil
 	}
+
+	if !strings.HasPrefix(u.Password, "$2") {
+	if err := u.BeforeAddUser(); err != nil {
+		return 0, err
+		}
+	}
+
 	result, err := db.ExecContext(context.Background(), `INSERT INTO user (email, password) VALUES (?, ?)`, u.Email, u.Password)
 	if err != nil {
 		return 0, err
 	}
 	return result.LastInsertId()
+}
+
+
+func (u *User) BeforeAddUser() error {
+
+	//Turns password into hash
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password),bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	u.Password = string(hashedPassword)
+
+	//Removes spaces in email
+	u.Email = html.EscapeString(strings.TrimSpace(u.Email))
+
+	return nil
+
 }
 
 func GetAllUsers(db *sql.DB) ([]User, error) {
