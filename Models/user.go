@@ -2,20 +2,20 @@ package Models
 
 import (
 	"context"
-	
+
 	"database/sql"
-	
+
 	"log"
-	
+
 	"html"
-	
+
 	"strings"
 
 	"errors"
 
 	"golang.org/x/crypto/bcrypt"
 
-	"example/Wave_Seekers_Back/Utils/Token"
+	token "example/Wave_Seekers_Back/Utils/Token"
 )
 
 type User struct {
@@ -37,12 +37,14 @@ func CreateUserTable(db *sql.DB) error {
 	return err
 }
 
-func VerifyPassword(password,hashedPassword string) error {
+/*-------------------POST-------------------*/
+
+func VerifyPassword(password, hashedPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
 func LoginCheck(db *sql.DB, email string, password string) (string, error) {
-	
+
 	u := User{}
 
 	err := db.QueryRow(`SELECT id, email, password FROM user WHERE email = ?`, email).Scan(&u.ID, &u.Email, &u.Password)
@@ -64,7 +66,7 @@ func LoginCheck(db *sql.DB, email string, password string) (string, error) {
 	}
 
 	return tokenString, nil
-	
+
 }
 
 func AddUser(db *sql.DB, u *User) (int64, error) {
@@ -78,8 +80,8 @@ func AddUser(db *sql.DB, u *User) (int64, error) {
 	}
 
 	if !strings.HasPrefix(u.Password, "$2") {
-	if err := u.BeforeAddUser(); err != nil {
-		return 0, err
+		if err := u.BeforeAddUser(); err != nil {
+			return 0, err
 		}
 	}
 
@@ -90,11 +92,10 @@ func AddUser(db *sql.DB, u *User) (int64, error) {
 	return result.LastInsertId()
 }
 
-
 func (u *User) BeforeAddUser() error {
 
 	//Turns password into hash
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password),bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
@@ -106,6 +107,8 @@ func (u *User) BeforeAddUser() error {
 	return nil
 
 }
+
+/*-------------------GET-------------------*/
 
 func GetAllUsers(db *sql.DB) ([]User, error) {
 	rows, err := db.Query(`SELECT id, email, password FROM user`)
@@ -133,4 +136,42 @@ func GetUserByID(db *sql.DB, id int) (*User, error) {
 		return nil, err
 	}
 	return user, nil
+}
+
+/*-------------------UPDATE-------------------*/
+
+/*-------------------DELETE-------------------*/
+
+func DeleteUser(db *sql.DB, id int) error {
+	// check if user exists
+	var exists int
+	err := db.QueryRow(`SELECT id FROM user WHERE id = ?`, id).Scan(&exists)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return sql.ErrNoRows // no user
+		}
+		return err // other error in DB
+	}
+
+	// delete the user
+	result, err := db.ExecContext(
+		context.Background(),
+		`DELETE FROM user WHERE id = ?`,
+		id,
+	)
+	if err != nil {
+		return err
+	}
+
+	//check if user is deleted by checking rows
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil // Success
 }

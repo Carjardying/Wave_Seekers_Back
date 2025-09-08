@@ -11,7 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/joho/godotenv" 
+	"github.com/joho/godotenv"
 
 	"example/Wave_Seekers_Back/Models"
 
@@ -81,6 +81,8 @@ func main() {
 	router.POST("/spots", addSpotHandler)
 	router.POST("/signup", Controllers.SignUp)
 	router.POST("/login", Controllers.Login)
+
+	router.DELETE("/users/:user_id", deleteUserHandler)
 
 	router.Run("localhost:8080")
 }
@@ -171,7 +173,7 @@ func getSpotByCountryHandler(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, spot)
 }
 
-func getSpotsByUserIDHandler(c *gin.Context){
+func getSpotsByUserIDHandler(c *gin.Context) {
 	idStr := c.Param("user_id")
 
 	user_id, err := strconv.Atoi(idStr)
@@ -220,5 +222,32 @@ func addSpotHandler(c *gin.Context) {
 		"message": "Spot created successfully",
 		"spot":    spot,
 		"id":      id,
+	})
+}
+
+/*---------------DELETE-------------*/
+
+func deleteUserHandler(c *gin.Context) {
+	idStr := c.Param("user_id")
+
+	user_id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid User ID"})
+		return
+	}
+
+	err = Models.DeleteUser(db, user_id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.IndentedJSON(http.StatusNotFound, gin.H{"message": "user not found"})
+		} else {
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "error deleting user", "error": err.Error()})
+		}
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"message":    "user deleted successfully",
+		"deleted_id": user_id,
 	})
 }
