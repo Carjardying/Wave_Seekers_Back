@@ -65,8 +65,13 @@ func main() {
 	router.GET("/spots", getAllSpotsHandler)
 	router.GET("/spots/:id", getSpotByIDHandler) //Spot's Details
 	router.GET("/spots/country/:country_id", getSpotByCountryHandler)
+
+	router.POST("/spots", addSpotHandler)
+
 	router.Run("localhost:8080")
 }
+
+/*---------- GET------*/
 
 // Handler function that calls GetUserByID
 func getUserByIDHandler(c *gin.Context) {
@@ -150,4 +155,33 @@ func getSpotByCountryHandler(c *gin.Context) {
 		return
 	}
 	c.IndentedJSON(http.StatusOK, spot)
+}
+
+/*---------- POST------*/
+
+func addSpotHandler(c *gin.Context) {
+	var spot Models.Spot
+
+	if err := c.ShouldBind(&spot); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid form data", "details": err.Error()})
+		return
+	}
+
+	if spot.Destination == "" || spot.Location == "" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Destination and Location are required"})
+		return
+	}
+
+	id, err := Models.AddSpot(db, &spot)
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create spot", "details": err.Error()})
+		return
+	}
+
+	spot.ID = int(id)
+	c.IndentedJSON(http.StatusCreated, gin.H{
+		"message": "Spot created successfully",
+		"spot":    spot,
+		"id":      id,
+	})
 }

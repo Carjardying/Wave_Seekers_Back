@@ -7,18 +7,18 @@ import (
 )
 
 type Spot struct {
-	ID              int
-	UserID          int
-	CountryID       int
-	Destination     string
-	Location        string
-	Lat             float64
-	Long            float64
-	PeakSeasonStart string
-	PeakSeasonEnd   string
-	DifficultyLevel int
-	SurfingCulture  string
-	ImageURL        string
+	ID              int     `json:"id" form:"id"`
+	UserID          int     `json:"user_id" form:"user_id"`
+	CountryID       int     `json:"country_id" form:"country_id"`
+	Destination     string  `json:"destination" form:"destination"`
+	Location        string  `json:"location" form:"location"`
+	Lat             float64 `json:"lat" form:"lat"`
+	Long            float64 `json:"long" form:"long"`
+	PeakSeasonStart string  `json:"peak_season_start" form:"peak_season_start"`
+	PeakSeasonEnd   string  `json:"peak_season_end" form:"peak_season_end"`
+	DifficultyLevel int     `json:"difficulty_level" form:"difficulty_level"`
+	SurfingCulture  string  `json:"surfing_culture" form:"surfing_culture"`
+	ImageURL        string  `json:"image_url" form:"image_url"`
 }
 
 func CreateSpotTable(db *sql.DB) error {
