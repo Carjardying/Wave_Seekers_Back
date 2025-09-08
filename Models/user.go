@@ -37,6 +37,25 @@ func CreateUserTable(db *sql.DB) error {
 	return err
 }
 
+func GetCurrentUserByID(db *sql.DB, uid uint) (User, error) {
+	var u User
+
+	err := db.QueryRow(`SELECT id, email, password FROM user WHERE id = ?`, uid).Scan(&u.ID, &u.Email, &u.Password)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return u, errors.New("User not found!")
+		}
+		return u, err
+	}
+
+	u.PrepareGive()
+	return u, nil
+}
+
+func (u *User) PrepareGive() {
+	u.Password = ""
+}
+
 /*-------------------POST-------------------*/
 
 func VerifyPassword(password, hashedPassword string) error {

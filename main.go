@@ -18,6 +18,8 @@ import (
 	"example/Wave_Seekers_Back/Seeders"
 
 	"example/Wave_Seekers_Back/Controllers"
+
+	"example/Wave_Seekers_Back/Middlewares"
 )
 
 var db *sql.DB
@@ -72,6 +74,7 @@ func main() {
 	}
 
 	router := gin.Default()
+	
 	router.GET("/users/:id", getUserByIDHandler)
 	router.GET("/spots", getAllSpotsHandler)
 	router.GET("/spots/:id", getSpotByIDHandler) //Spot's Details
@@ -81,6 +84,11 @@ func main() {
 	router.POST("/spots", addSpotHandler)
 	router.POST("/signup", Controllers.SignUp)
 	router.POST("/login", Controllers.Login)
+	router.POST("/logout", Controllers.Logout)
+
+	protected := router.Group("/admin")
+	protected.Use(Middlewares.JwtAuthMiddleware())
+	protected.GET("/user",Controllers.CurrentUser)
 
 	router.DELETE("/users/:user_id", deleteUserHandler)
 
