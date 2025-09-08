@@ -76,6 +76,8 @@ func main() {
 	router.GET("/spots", getAllSpotsHandler)
 	router.GET("/spots/:id", getSpotByIDHandler) //Spot's Details
 	router.GET("/spots/country/:country_id", getSpotByCountryHandler)
+	router.GET("/spots/user/:user_id", getSpotsByUserIDHandler)
+
 	router.POST("/spots", addSpotHandler)
 	router.POST("/signup", Controllers.SignUp)
 	router.POST("/login", Controllers.Login)
@@ -167,6 +169,29 @@ func getSpotByCountryHandler(c *gin.Context) {
 		return
 	}
 	c.IndentedJSON(http.StatusOK, spot)
+}
+
+func getSpotsByUserIDHandler(c *gin.Context){
+	idStr := c.Param("user_id")
+
+	user_id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid spot ID"})
+		return
+	}
+
+	spot, err := Models.GetSpotsByUserID(db, user_id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.IndentedJSON(http.StatusNotFound, gin.H{"message": "spot not found"})
+		} else {
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "error fetching spot"})
+		}
+		return
+	}
+	c.IndentedJSON(http.StatusOK, spot)
+
 }
 
 /*---------- POST------*/
