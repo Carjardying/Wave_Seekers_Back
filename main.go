@@ -80,6 +80,7 @@ func main() {
 	router.GET("/spots/:id", getSpotByIDHandler) //Spot's Details
 	router.GET("/spots/country/:country_id", getSpotByCountryHandler)
 	router.GET("/spots/user/:user_id", getSpotsByUserIDHandler)
+	router.GET("/countries", getAllCountriesHandler)
 
 	router.POST("/spots", addSpotHandler)
 	router.POST("/signup", Controllers.SignUp)
@@ -211,6 +212,17 @@ func getSpotsByUserIDHandler(c *gin.Context) {
 	}
 	c.IndentedJSON(http.StatusOK, spot)
 
+}
+
+// GetAllCountries'Handler
+
+func getAllCountriesHandler(c *gin.Context) {
+    countries, err := Models.GetAllCountries(db)
+    if err != nil {
+        c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "error fetching countries"})
+        return
+    }
+    c.IndentedJSON(http.StatusOK, countries)
 }
 
 /*---------- POST------*/
