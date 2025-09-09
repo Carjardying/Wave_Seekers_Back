@@ -11,14 +11,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/joho/godotenv" 
+	"github.com/joho/godotenv"
 
 	"example/Wave_Seekers_Back/Models"
 
 	"example/Wave_Seekers_Back/Seeders"
 
 	"example/Wave_Seekers_Back/Controllers"
-
 	// "github.com/gorilla/mux"
 	// "github.com/rs/cors"
 )
@@ -87,16 +86,15 @@ func main() {
 
 	/* Trying to connect front and back and Run the back serveur*/
 	router.GET("/hello", func(c *gin.Context) {
-    	c.String(200, "Bonjour depuis le back")
+		c.String(200, "Bonjour depuis le back")
 	})
 
-	log.Println("Server starting on http://0.0.0.0:8080")
-    err = router.RunTLS(":8080", "cert.pem", "key.pem")
-    if err != nil {
-        log.Fatal("Failed to start HTTPS server:", err)
-    }
+	log.Println("Server starting on https://localhost:8443")
+	err = router.RunTLS(":8443", "cert.pem", "key.pem")
+	if err != nil {
+		log.Fatal("Failed to start HTTPS server:", err)
+	}
 }
-
 
 /*---------- GET------*/
 
@@ -184,7 +182,7 @@ func getSpotByCountryHandler(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, spot)
 }
 
-func getSpotsByUserIDHandler(c *gin.Context){
+func getSpotsByUserIDHandler(c *gin.Context) {
 	idStr := c.Param("user_id")
 
 	user_id, err := strconv.Atoi(idStr)
