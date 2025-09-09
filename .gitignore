@@ -1,2 +1,7 @@
 # Environment variables
 .env
+
+# SSL Certificates
+*.pem
+*.key
+*.cert

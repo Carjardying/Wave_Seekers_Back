@@ -18,6 +18,9 @@ import (
 	"example/Wave_Seekers_Back/Seeders"
 
 	"example/Wave_Seekers_Back/Controllers"
+
+	// "github.com/gorilla/mux"
+	// "github.com/rs/cors"
 )
 
 var db *sql.DB
@@ -82,8 +85,18 @@ func main() {
 	router.POST("/signup", Controllers.SignUp)
 	router.POST("/login", Controllers.Login)
 
-	router.Run("localhost:8080")
+	/* Trying to connect front and back and Run the back serveur*/
+	router.GET("/hello", func(c *gin.Context) {
+    	c.String(200, "Bonjour depuis le back")
+	})
+
+	log.Println("Server starting on http://0.0.0.0:8080")
+    err = router.RunTLS(":8080", "cert.pem", "key.pem")
+    if err != nil {
+        log.Fatal("Failed to start HTTPS server:", err)
+    }
 }
+
 
 /*---------- GET------*/
 
@@ -222,3 +235,9 @@ func addSpotHandler(c *gin.Context) {
 		"id":      id,
 	})
 }
+
+/*----------Tentative connexion back et front------*/
+
+// type Message struct {
+//     Text string `json:"text"`
+// }
