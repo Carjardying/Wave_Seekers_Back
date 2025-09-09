@@ -18,8 +18,8 @@ import (
 	"example/Wave_Seekers_Back/Seeders"
 
 	"example/Wave_Seekers_Back/Controllers"
-	// "github.com/gorilla/mux"
-	// "github.com/rs/cors"
+
+	"example/Wave_Seekers_Back/Middlewares"
 )
 
 var db *sql.DB
@@ -74,6 +74,7 @@ func main() {
 	}
 
 	router := gin.Default()
+	
 	router.GET("/users/:id", getUserByIDHandler)
 	router.GET("/spots", getAllSpotsHandler)
 	router.GET("/spots/:id", getSpotByIDHandler) //Spot's Details
@@ -83,6 +84,13 @@ func main() {
 	router.POST("/spots", addSpotHandler)
 	router.POST("/signup", Controllers.SignUp)
 	router.POST("/login", Controllers.Login)
+	router.POST("/logout", Controllers.Logout)
+
+	protected := router.Group("/admin")
+	protected.Use(Middlewares.JwtAuthMiddleware())
+	protected.GET("/user",Controllers.CurrentUser)
+
+	router.DELETE("/users/:user_id", deleteUserHandler)
 
 	/* Trying to connect front and back and Run the back serveur*/
 	router.GET("/hello", func(c *gin.Context) {
@@ -234,8 +242,30 @@ func addSpotHandler(c *gin.Context) {
 	})
 }
 
-/*----------Tentative connexion back et front------*/
 
-// type Message struct {
-//     Text string `json:"text"`
-// }
+/*---------------DELETE-------------*/
+
+func deleteUserHandler(c *gin.Context) {
+	idStr := c.Param("user_id")
+
+	user_id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid User ID"})
+		return
+	}
+
+	err = Models.DeleteUser(db, user_id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.IndentedJSON(http.StatusNotFound, gin.H{"message": "user not found"})
+		} else {
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "error deleting user", "error": err.Error()})
+		}
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"message":    "user deleted successfully",
+		"deleted_id": user_id,
+	})
+}

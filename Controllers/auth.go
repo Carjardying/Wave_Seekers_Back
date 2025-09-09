@@ -8,12 +8,33 @@ import (
 	"github.com/gin-gonic/gin"
 	
 	"example/Wave_Seekers_Back/Models"
+
+	"example/Wave_Seekers_Back/Utils/Token"
 )
 
 var db *sql.DB
 
 func InitializeDB(database *sql.DB) {
 	db = database
+}
+
+func CurrentUser(c *gin.Context){
+
+	user_id, err := token.ExtractTokenID(c)
+	
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	
+	u, err := Models.GetCurrentUserByID(db, user_id)
+	
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message":"success","data":u})
 }
 
 type LoginInput struct {
@@ -64,13 +85,27 @@ func SignUp(c *gin.Context){
 		return
 	}
 
-	_, err := Models.AddUser(db, &u)
-
+	userID, err := Models.AddUser(db, &u)
 	if err != nil{
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message":"registration success"}) 
+	token, err := token.GenerateToken(uint(userID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
+		return
+	}
 
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Registration successful", 
+		"token": token,
+		"user_id": userID,
+	})
+}
+
+func Logout(c *gin.Context) {
+    c.JSON(http.StatusOK, gin.H{
+        "message": "Successfully logged out. Please remove token on client side.",
+    })
 }
