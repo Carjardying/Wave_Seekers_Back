@@ -1,3 +1,7 @@
 # Environment variables
 .env
-.exe
+
+# SSL Certificates
+*.pem
+*.key
+*.cert

@@ -92,7 +92,16 @@ func main() {
 
 	router.DELETE("/users/:user_id", deleteUserHandler)
 
-	router.Run("localhost:8080")
+	/* Trying to connect front and back and Run the back serveur*/
+	router.GET("/hello", func(c *gin.Context) {
+		c.String(200, "Bonjour depuis le back")
+	})
+
+	log.Println("Server starting on https://localhost:8443")
+	err = router.RunTLS(":8443", "cert.pem", "key.pem")
+	if err != nil {
+		log.Fatal("Failed to start HTTPS server:", err)
+	}
 }
 
 /*---------- GET------*/
@@ -232,6 +241,7 @@ func addSpotHandler(c *gin.Context) {
 		"id":      id,
 	})
 }
+
 
 /*---------------DELETE-------------*/
 
