@@ -10,6 +10,7 @@ type Spot struct {
 	ID              int     `json:"id" form:"id"`
 	UserID          int     `json:"user_id" form:"user_id"`
 	CountryID       int     `json:"country_id" form:"country_id"`
+	CountryName     string  `json:"country_name"`
 	Destination     string  `json:"destination" form:"destination"`
 	Location        string  `json:"location" form:"location"`
 	Lat             float64 `json:"lat" form:"lat"`
@@ -71,7 +72,16 @@ func AddSpot(db *sql.DB, s *Spot) (int64, error) {
 /*-------------------GET-------------------*/
 
 func GetAllSpots(db *sql.DB) ([]Spot, error) {
-	rows, err := db.Query(`SELECT id, user_id, country_id, destination, location, lat, long, peak_season_start, peak_season_end, difficulty_level, surfing_culture, image_url FROM spot`)
+	rows, err := db.Query(`
+        SELECT 
+            s.id, s.user_id, s.country_id,
+            s.destination, s.location, s.lat, s.long,
+            s.peak_season_start, s.peak_season_end,
+            s.difficulty_level, s.surfing_culture, s.image_url,
+            COALESCE(c.name, s.location, 'Unknown') AS country_name
+        FROM spot s
+        LEFT JOIN country c ON s.country_id = c.id
+    `)
 	if err != nil {
 		return nil, err
 	}
@@ -80,10 +90,24 @@ func GetAllSpots(db *sql.DB) ([]Spot, error) {
 	var spots []Spot
 	for rows.Next() {
 		var spot Spot
-		err := rows.Scan(&spot.ID, &spot.UserID, &spot.CountryID, &spot.Destination, &spot.Location, &spot.Lat, &spot.Long, &spot.PeakSeasonStart, &spot.PeakSeasonEnd, &spot.DifficultyLevel, &spot.SurfingCulture, &spot.ImageURL)
-		if err != nil {
+		var countryName sql.NullString // <-- important
+
+		if err := rows.Scan(
+			&spot.ID, &spot.UserID, &spot.CountryID,
+			&spot.Destination, &spot.Location, &spot.Lat, &spot.Long,
+			&spot.PeakSeasonStart, &spot.PeakSeasonEnd,
+			&spot.DifficultyLevel, &spot.SurfingCulture, &spot.ImageURL,
+			&countryName,
+		); err != nil {
 			return nil, err
 		}
+
+		if countryName.Valid && countryName.String != "" {
+			spot.CountryName = countryName.String
+		} else {
+			spot.CountryName = "Unknown"
+		}
+
 		spots = append(spots, spot)
 	}
 	return spots, nil
