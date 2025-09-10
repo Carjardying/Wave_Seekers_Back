@@ -68,7 +68,7 @@ func SeedCountries(db *sql.DB) error {
 		{Name: "Tajikistan"}, {Name: "Tanzania"}, {Name: "Thailand"}, {Name: "Timor-Leste"}, {Name: "Togo"},
 		{Name: "Tonga"}, {Name: "Trinidad and Tobago"}, {Name: "Tunisia"}, {Name: "Turkey"}, {Name: "Turkmenistan"},
 		{Name: "Tuvalu"}, {Name: "Uganda"}, {Name: "Ukraine"}, {Name: "United Arab Emirates"}, {Name: "United Kingdom"},
-		{Name: "United States"}, {Name: "Uruguay"}, {Name: "Uzbekistan"}, {Name: "Vanuatu"}, {Name: "Venezuela"},
+		{Name: "USA"}, {Name: "Uruguay"}, {Name: "Uzbekistan"}, {Name: "Vanuatu"}, {Name: "Venezuela"},
 		{Name: "Vietnam"}, {Name: "Yemen"}, {Name: "Zambia"}, {Name: "Zimbabwe"},
 	}
 
