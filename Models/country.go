@@ -36,3 +36,22 @@ func AddCountry(db *sql.DB, c *Country) (int64, error) {
 	}
 	return result.LastInsertId()
 }
+
+func GetAllCountries(db *sql.DB) ([]Country, error) {
+    rows, err := db.Query(`SELECT id, name FROM country ORDER BY name`)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    var countries []Country
+    for rows.Next() {
+        var country Country
+        err := rows.Scan(&country.ID, &country.Name)
+        if err != nil {
+            return nil, err
+        }
+        countries = append(countries, country)
+    }
+    return countries, nil
+}

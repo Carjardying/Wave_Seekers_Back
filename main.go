@@ -56,6 +56,7 @@ func main() {
 	if err := Models.CreateSpotTable(db); err != nil {
 		log.Fatal(err)
 	}
+	// Bonus : needed for like spot feature
 	// if err := Models.CreateLikedSpotTable(db); err != nil {
 	// 	log.Fatal(err)
 	// }
@@ -77,9 +78,10 @@ func main() {
 	
 	router.GET("/users/:id", getUserByIDHandler)
 	router.GET("/spots", getAllSpotsHandler)
-	router.GET("/spots/:id", getSpotByIDHandler) //Spot's Details
+	router.GET("/spots/:id", getSpotByIDHandler)
 	router.GET("/spots/country/:country_id", getSpotByCountryHandler)
 	router.GET("/spots/user/:user_id", getSpotsByUserIDHandler)
+	router.GET("/countries", getAllCountriesHandler)
 
 	router.POST("/spots", addSpotHandler)
 	router.POST("/signup", Controllers.SignUp)
@@ -92,7 +94,7 @@ func main() {
 
 	router.DELETE("/users/:user_id", deleteUserHandler)
 
-	/* Trying to connect front and back and Run the back serveur*/
+	/* Hello function to test frontend and backend connexion*/
 	router.GET("/hello", func(c *gin.Context) {
 		c.String(200, "Bonjour depuis le back")
 	})
@@ -211,6 +213,17 @@ func getSpotsByUserIDHandler(c *gin.Context) {
 	}
 	c.IndentedJSON(http.StatusOK, spot)
 
+}
+
+// GetAllCountries'Handler
+
+func getAllCountriesHandler(c *gin.Context) {
+    countries, err := Models.GetAllCountries(db)
+    if err != nil {
+        c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "error fetching countries"})
+        return
+    }
+    c.IndentedJSON(http.StatusOK, countries)
 }
 
 /*---------- POST------*/
