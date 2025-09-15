@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 
+	"example/Wave_Seekers_Back/Controllers"
 	"example/Wave_Seekers_Back/Models"
 )
 
@@ -18,7 +19,7 @@ func SeedUsers(db *sql.DB) error {
 	}
 
 	for _, u := range users {
-		id, err := Models.AddUser(db, &u)
+		id, err := Controllers.AddUser(db, &u)
 		if err != nil {
 			log.Printf("Insert error user %s : %v\n", u.Email, err)
 		} else {
@@ -73,7 +74,7 @@ func SeedCountries(db *sql.DB) error {
 	}
 
 	for _, c := range countries {
-		id, err := Models.AddCountry(db, &c)
+		id, err := Controllers.AddCountry(db, &c)
 		if err != nil {
 			log.Printf("Insert error country %s : %v\n", c.Name, err)
 		} else {
@@ -220,7 +221,7 @@ func SeedSpots(db *sql.DB) error {
 	}
 
 	for _, s := range spots {
-		id, err := Models.AddSpot(db, &s)
+		id, err := Controllers.AddSpot(db, &s)
 		if err != nil {
 			log.Printf("Insert error spot %s : %v\n", s.Destination, err)
 		} else {

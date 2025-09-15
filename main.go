@@ -75,7 +75,7 @@ func main() {
 	}
 
 	router := gin.Default()
-	
+
 	router.GET("/users/:id", getUserByIDHandler)
 	router.GET("/spots", getAllSpotsHandler)
 	router.GET("/spots/:id", getSpotByIDHandler)
@@ -90,7 +90,7 @@ func main() {
 
 	protected := router.Group("/admin")
 	protected.Use(Middlewares.JwtAuthMiddleware())
-	protected.GET("/user",Controllers.CurrentUser)
+	protected.GET("/user", Controllers.CurrentUser)
 
 	router.DELETE("/users/:user_id", deleteUserHandler)
 
@@ -119,7 +119,7 @@ func getUserByIDHandler(c *gin.Context) {
 		return
 	}
 
-	user, err := Models.GetUserByID(db, id)
+	user, err := Controllers.GetUserByID(db, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			c.IndentedJSON(http.StatusNotFound, gin.H{"message": "user not found"})
@@ -135,7 +135,7 @@ func getUserByIDHandler(c *gin.Context) {
 // GetAllSpot's Handler
 func getAllSpotsHandler(c *gin.Context) {
 
-	spot, err := Models.GetAllSpots(db)
+	spot, err := Controllers.GetAllSpots(db)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			c.IndentedJSON(http.StatusNotFound, gin.H{"message": "spots list not found"})
@@ -158,7 +158,7 @@ func getSpotByIDHandler(c *gin.Context) {
 		return
 	}
 
-	spot, err := Models.GetSpotByID(db, id)
+	spot, err := Controllers.GetSpotByID(db, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			c.IndentedJSON(http.StatusNotFound, gin.H{"message": "spot not found"})
@@ -180,7 +180,7 @@ func getSpotByCountryHandler(c *gin.Context) {
 		return
 	}
 
-	spot, err := Models.GetSpotsByCountryID(db, country_id)
+	spot, err := Controllers.GetSpotsByCountryID(db, country_id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			c.IndentedJSON(http.StatusNotFound, gin.H{"message": "spot not found"})
@@ -202,7 +202,7 @@ func getSpotsByUserIDHandler(c *gin.Context) {
 		return
 	}
 
-	spot, err := Models.GetSpotsByUserID(db, user_id)
+	spot, err := Controllers.GetSpotsByUserID(db, user_id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			c.IndentedJSON(http.StatusNotFound, gin.H{"message": "spot not found"})
@@ -218,12 +218,12 @@ func getSpotsByUserIDHandler(c *gin.Context) {
 // GetAllCountries'Handler
 
 func getAllCountriesHandler(c *gin.Context) {
-    countries, err := Models.GetAllCountries(db)
-    if err != nil {
-        c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "error fetching countries"})
-        return
-    }
-    c.IndentedJSON(http.StatusOK, countries)
+	countries, err := Controllers.GetAllCountries(db)
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "error fetching countries"})
+		return
+	}
+	c.IndentedJSON(http.StatusOK, countries)
 }
 
 /*---------- POST------*/
@@ -241,7 +241,7 @@ func addSpotHandler(c *gin.Context) {
 		return
 	}
 
-	id, err := Models.AddSpot(db, &spot)
+	id, err := Controllers.AddSpot(db, &spot)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create spot", "details": err.Error()})
 		return
@@ -255,7 +255,6 @@ func addSpotHandler(c *gin.Context) {
 	})
 }
 
-
 /*---------------DELETE-------------*/
 
 func deleteUserHandler(c *gin.Context) {
@@ -267,7 +266,7 @@ func deleteUserHandler(c *gin.Context) {
 		return
 	}
 
-	err = Models.DeleteUser(db, user_id)
+	err = Controllers.DeleteUser(db, user_id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			c.IndentedJSON(http.StatusNotFound, gin.H{"message": "user not found"})

@@ -4,12 +4,12 @@ import (
 	"net/http"
 
 	"database/sql"
-  	
+
 	"github.com/gin-gonic/gin"
-	
+
 	"example/Wave_Seekers_Back/Models"
 
-	"example/Wave_Seekers_Back/Utils/Token"
+	token "example/Wave_Seekers_Back/Utils/Token"
 )
 
 var db *sql.DB
@@ -18,32 +18,32 @@ func InitializeDB(database *sql.DB) {
 	db = database
 }
 
-func CurrentUser(c *gin.Context){
+func CurrentUser(c *gin.Context) {
 
 	user_id, err := token.ExtractTokenID(c)
-	
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	
-	u, err := Models.GetCurrentUserByID(db, user_id)
-	
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message":"success","data":u})
+	u, err := GetCurrentUserByID(db, user_id)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "success", "data": u})
 }
 
 type LoginInput struct {
-	Email string `json:"email" binding:"required"`
+	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
 func Login(c *gin.Context) {
-	
+
 	var input LoginInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -51,7 +51,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token, err := Models.LoginCheck(db, input.Email, input.Password)
+	token, err := LoginCheck(db, input.Email, input.Password)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "username or password is invalid."})
@@ -63,12 +63,12 @@ func Login(c *gin.Context) {
 }
 
 type SignUpInput struct {
-	Email string `json:"email" binding:"required"`
+	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
-func SignUp(c *gin.Context){
-	
+func SignUp(c *gin.Context) {
+
 	var input SignUpInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -85,8 +85,8 @@ func SignUp(c *gin.Context){
 		return
 	}
 
-	userID, err := Models.AddUser(db, &u)
-	if err != nil{
+	userID, err := AddUser(db, &u)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -98,14 +98,14 @@ func SignUp(c *gin.Context){
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Registration successful", 
-		"token": token,
+		"message": "Registration successful",
+		"token":   token,
 		"user_id": userID,
 	})
 }
 
 func Logout(c *gin.Context) {
-    c.JSON(http.StatusOK, gin.H{
-        "message": "Successfully logged out. Please remove token on client side.",
-    })
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully logged out. Please remove token on client side.",
+	})
 }
