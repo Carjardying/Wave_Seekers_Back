@@ -1,7 +1,6 @@
 package Models
 
 import (
-	"context"
 	"database/sql"
 	"log"
 )
@@ -21,37 +20,37 @@ func CreateCountryTable(db *sql.DB) error {
 	return err
 }
 
-func AddCountry(db *sql.DB, c *Country) (int64, error) {
-	var existingID int64
-	err := db.QueryRow(`SELECT id FROM country WHERE name = ?`, c.Name).Scan(&existingID)
-	if err != nil && err != sql.ErrNoRows {
-		return 0, err
-	}
-	if existingID != 0 {
-		return existingID, nil
-	}
-	result, err := db.ExecContext(context.Background(), `INSERT INTO country (name) VALUES (?)`, c.Name)
-	if err != nil {
-		return 0, err
-	}
-	return result.LastInsertId()
-}
+// func AddCountry(db *sql.DB, c *Country) (int64, error) {
+// 	var existingID int64
+// 	err := db.QueryRow(`SELECT id FROM country WHERE name = ?`, c.Name).Scan(&existingID)
+// 	if err != nil && err != sql.ErrNoRows {
+// 		return 0, err
+// 	}
+// 	if existingID != 0 {
+// 		return existingID, nil
+// 	}
+// 	result, err := db.ExecContext(context.Background(), `INSERT INTO country (name) VALUES (?)`, c.Name)
+// 	if err != nil {
+// 		return 0, err
+// 	}
+// 	return result.LastInsertId()
+// }
 
-func GetAllCountries(db *sql.DB) ([]Country, error) {
-    rows, err := db.Query(`SELECT id, name FROM country ORDER BY name`)
-    if err != nil {
-        return nil, err
-    }
-    defer rows.Close()
+// func GetAllCountries(db *sql.DB) ([]Country, error) {
+//     rows, err := db.Query(`SELECT id, name FROM country ORDER BY name`)
+//     if err != nil {
+//         return nil, err
+//     }
+//     defer rows.Close()
 
-    var countries []Country
-    for rows.Next() {
-        var country Country
-        err := rows.Scan(&country.ID, &country.Name)
-        if err != nil {
-            return nil, err
-        }
-        countries = append(countries, country)
-    }
-    return countries, nil
-}
+//     var countries []Country
+//     for rows.Next() {
+//         var country Country
+//         err := rows.Scan(&country.ID, &country.Name)
+//         if err != nil {
+//             return nil, err
+//         }
+//         countries = append(countries, country)
+//     }
+//     return countries, nil
+// }
