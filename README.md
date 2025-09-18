@@ -25,4 +25,5 @@ VSCode, Golang, Gin gonic
 | **Formatage des réponses API**      | Structuration des retours en JSON pour consommation Frontend                     |
 
 Lien vers le [Frontend](https://github.com/Carine09/Wave_Seekers_Front)
+
 Lien vers la [Demo via Canva en lecture seule ](https://www.canva.com/design/DAGzUIeUdic/6zaBdPRmdl4-sKMXH3W1rQ/edit)
